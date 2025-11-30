@@ -4,7 +4,17 @@
 
 namespace muhamadiarov
 {
-  bool checkOnRepeat(char *line, char symbol, size_t size);
+  bool checkOnRepeat(char *line, char symbol, size_t size)
+  {
+    for (size_t i = 0; i < size; ++i)
+    {
+      if (line[i] == symbol)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
   char *getline(std::istream &in, size_t &size, size_t &countNumbers);
   char *latRmv(char *res, char *str, size_t size);
   char *latTwo(char *line1, size_t size1, const char *line2, size_t size2, char *res2, size_t &size);
