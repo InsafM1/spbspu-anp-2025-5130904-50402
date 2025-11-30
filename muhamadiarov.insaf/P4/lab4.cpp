@@ -97,7 +97,7 @@ namespace muhamadiarov
     res[count] = '\0';
     return res;
   }
-  char *latTwo(char *line1, size_t size1, const char *line2, size_t size2, char *res2, size_t &size)
+  char *latTwo(char *line1, size_t size1, const char *line2, const size_t size2, char *res2, size_t &size)
   {
     for (size_t i = 0; i < size1; ++i)
     {
@@ -176,7 +176,7 @@ int main()
     return 1;
   }
   const char *line2 = "def ghk";
-  size_t size2 = 7;
+  const size_t size2 = 7;
   char *res2 = nullptr;
   size_t sizeForLatTwo = 0;
   try
