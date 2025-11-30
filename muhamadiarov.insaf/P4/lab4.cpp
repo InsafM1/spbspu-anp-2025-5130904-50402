@@ -15,7 +15,74 @@ namespace muhamadiarov
     }
     return false;
   }
-  char *getline(std::istream &in, size_t &size, size_t &countNumbers);
+  char *getline(std::istream &in, size_t &size, size_t &countNumbers)
+  {
+    bool is_skipws = in.flags() & std::ios_base::skipws;
+    if (is_skipws)
+    {
+      in >> std::noskipws;
+    }
+    char *str = new char[20];
+    size_t comp = 20;
+    char ch = ' ';
+    while (in >> ch && ch != '\n')
+    {
+      try
+      {
+        if (size == comp - 1)
+        {
+          char *tmp = new char[comp * 2];
+          comp *= 2;
+          for (size_t i = 0; i < size; ++i)
+          {
+            tmp[i] = str[i];
+          }
+          delete[] str;
+          str = tmp;
+        }
+      }
+      catch (...)
+      {
+        delete[] str;
+        throw std::bad_alloc();
+      }
+      str[size] = ch;
+      if (std::isdigit(str[size]))
+      {
+        ++countNumbers;
+      }
+      ++size;
+    }
+    if (in.fail())
+    {
+      delete[] str;
+      throw std::logic_error("Error input\n");
+    }
+    str[size] = '\0';
+    try
+    {
+      if (size < comp)
+      {
+        char *tmp = new char[size];
+        for (size_t i = 0; i < size; ++i)
+        {
+          tmp[i] = str[i];
+        }
+        delete[] str;
+        str = tmp;
+      }
+    }
+    catch (...)
+    {
+      delete[] str;
+      throw std::bad_alloc();
+    }
+    if (is_skipws)
+    {
+      in >> std::skipws;
+    }
+    return str;
+  }
   char *latRmv(char *res, char *str, size_t size);
   char *latTwo(char *line1, size_t size1, const char *line2, size_t size2, char *res2, size_t &size);
 }
