@@ -83,10 +83,22 @@ namespace muhamadiarov
     }
     return str;
   }
-  char *latRmv(char *res, char *str, size_t size);
+  char *latRmv(char *res, char *str, size_t size)
+  {
+    size_t i = 0;
+    size_t count = 0;
+    for (; i < size; ++i)
+    {
+      if (std::isdigit(str[i]))
+      {
+        res[count++] = str[i];
+      }
+    }
+    res[count] = '\0';
+    return res;
+  }
   char *latTwo(char *line1, size_t size1, const char *line2, size_t size2, char *res2, size_t &size);
 }
-
 
 int main()
 {
