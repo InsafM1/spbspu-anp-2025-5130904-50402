@@ -97,7 +97,50 @@ namespace muhamadiarov
     res[count] = '\0';
     return res;
   }
-  char *latTwo(char *line1, size_t size1, const char *line2, size_t size2, char *res2, size_t &size);
+  char *latTwo(char *line1, size_t size1, const char *line2, size_t size2, char *res2, size_t &size)
+  {
+    for (size_t i = 0; i < size1; ++i)
+    {
+      bool ch = checkOnRepeat(res2, line1[i], size);
+      if (ch)
+      {
+        continue;
+      }
+      if (!std::isdigit(line1[i]) && line1[i] != ' ')
+      {
+        res2[size] = line1[i];
+        ++size;
+      }
+    }
+    for (size_t i = 0; i < size2; ++i)
+    {
+      bool ch = checkOnRepeat(res2, line2[i], size);
+      if (ch)
+      {
+        continue;
+      }
+      if (line2[i] != ' ')
+      {
+        res2[size] = line2[i];
+        ++size;
+      }
+    }
+    char tch = ' ';
+    for (size_t i = 0; i < size; ++i)
+    {
+      for (size_t j = 0; j < size - i - 1; ++j)
+      {
+        if (res2[j] > res2[j + 1])
+        {
+          tch = res2[j];
+          res2[j] = res2[j + 1];
+          res2[j + 1] = tch;
+        }
+      }
+    }
+    res2[size] = '\0';
+    return res2;
+  }
 }
 
 int main()
