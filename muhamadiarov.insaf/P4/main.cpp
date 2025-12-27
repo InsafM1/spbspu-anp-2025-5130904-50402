@@ -4,7 +4,7 @@
 
 namespace muhamadiarov
 {
-  bool checkOnRepeat(char *line, char symbol, size_t size)
+  bool checkOnRepeat(const char *line, const char symbol, const size_t size)
   {
     for (size_t i = 0; i < size; ++i)
     {
@@ -83,7 +83,7 @@ namespace muhamadiarov
     }
     return str;
   }
-  char *latRmv(char *res, char *str, size_t size)
+  char *latRmv(char *res, const char *str, const size_t size)
   {
     size_t i = 0;
     size_t count = 0;
@@ -97,7 +97,7 @@ namespace muhamadiarov
     res[count] = '\0';
     return res;
   }
-  char *latTwo(char *line1, size_t size1, const char *line2, const size_t size2, char *res2, size_t &size)
+  char *latTwo(const char *line1, const size_t size1, const char *line2, const size_t size2, char *res2, size_t &size)
   {
     for (size_t i = 0; i < size1; ++i)
     {
@@ -169,7 +169,7 @@ int main()
     char *tmp = new char[countNumbers + 1];
     res1 = muh::latRmv(tmp, str, size);
   }
-  catch (...)
+  catch (const std::bad_alloc&)
   {
     std::cerr << "Error creating dinamic memmory\n";
     delete[] str;
