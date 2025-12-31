@@ -4,7 +4,7 @@
 
 namespace muhamadiarov
 {
-  bool checkOnRepeat(const char *line, const char symbol, const size_t size)
+  bool checkOnRepeat(const char *line, char symbol, size_t size)
   {
     for (size_t i = 0; i < size; ++i)
     {
