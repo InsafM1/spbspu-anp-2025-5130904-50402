@@ -15,15 +15,16 @@ namespace muhamadiarov
     }
     return false;
   }
-  char *getline(std::istream &in, size_t &size, size_t &countNumbers)
+  char *getline(std::istream &in, size_t &size, size_t &countNotLetters)
   {
     bool is_skipws = in.flags() & std::ios_base::skipws;
     if (is_skipws)
     {
       in >> std::noskipws;
     }
-    char *str = new char[20];
-    size_t comp = 20;
+    const size_t beginSize = 20; 
+    char *str = new char[beginSize];
+    size_t comp = beginSize;
     char ch = ' ';
     while (in >> ch && ch != '\n')
     {
@@ -41,30 +42,38 @@ namespace muhamadiarov
           str = tmp;
         }
       }
-      catch (...)
+      catch (const std::bad_alloc&)
       {
+        if (is_skipws)
+        {
+          in >> std::skipws;
+        }
         delete[] str;
         throw std::bad_alloc();
       }
       str[size] = ch;
-      if (std::isdigit(str[size]))
+      if (!std::isalpha(str[size]))
       {
-        ++countNumbers;
+        ++countNotLetters;
       }
       ++size;
     }
     if (in.fail())
     {
+      if (is_skipws)
+      {
+        in >> std::skipws;
+      }
       delete[] str;
       throw std::logic_error("Error input\n");
     }
     str[size] = '\0';
     try
     {
-      if (size < comp)
+      if (size + 1 < comp)
       {
-        char *tmp = new char[size];
-        for (size_t i = 0; i < size; ++i)
+        char *tmp = new char[size + 1];
+        for (size_t i = 0; i < size + 1; ++i)
         {
           tmp[i] = str[i];
         }
@@ -72,8 +81,12 @@ namespace muhamadiarov
         str = tmp;
       }
     }
-    catch (...)
+    catch (const std::bad_alloc&)
     {
+      if (is_skipws)
+      {
+        in >> std::skipws;
+      }
       delete[] str;
       throw std::bad_alloc();
     }
@@ -81,50 +94,43 @@ namespace muhamadiarov
     {
       in >> std::skipws;
     }
+
     return str;
   }
-  char *latRmv(char *res, const char *str, const size_t size)
+  char *latRmv(char *res, const char *str)
   {
     size_t i = 0;
     size_t count = 0;
-    for (; i < size; ++i)
+    while (str[i] != '\0')
     {
-      if (std::isdigit(str[i]))
+      if (!std::isalpha(str[i]))
       {
         res[count++] = str[i];
       }
+      ++i;
     }
     res[count] = '\0';
     return res;
   }
-  char *latTwo(const char *line1, const size_t size1, const char *line2, const size_t size2, char *res2, size_t &size)
+  char *toAssociatStrings(const char *str1, const char *res, size_t &size)
+  {   
+    size_t i = 0;
+    while (str1[i] != '\0')
+    {
+      bool ch = checkOnRepeat(res, str1[i], size);
+      if (!std::isdigit(str1[i]) && str1[i] != ' ')
+      {
+        res[size] = str1[i];
+        ++size;
+      }
+      ++i;
+    }
+    return res;
+  }
+  char *latTwo(const char *line1, const char *line2, char *res2, size_t &size)
   {
-    for (size_t i = 0; i < size1; ++i)
-    {
-      bool ch = checkOnRepeat(res2, line1[i], size);
-      if (ch)
-      {
-        continue;
-      }
-      if (!std::isdigit(line1[i]) && line1[i] != ' ')
-      {
-        res2[size] = line1[i];
-        ++size;
-      }
-    }
-    for (size_t i = 0; i < size2; ++i)
-    {
-      bool ch = checkOnRepeat(res2, line2[i], size);
-      if (ch)
-      {
-        continue;
-      }
-      if (line2[i] != ' ')
-      {
-        res2[size] = line2[i];
-        ++size;
-      }
-    }
+    res = toAssociatStrings(line1, res2, size);
+    res = toAssociatStrings(line2, res2, size); 
     char tch = ' ';
     for (size_t i = 0; i < size; ++i)
     {
@@ -147,13 +153,13 @@ int main()
 {
   namespace muh = muhamadiarov;
   char *str = nullptr;
-  size_t countNumbers = 0;
+  size_t countNotLetters = 0;
   size_t size = 0;
   try
   {
     str = muh::getline(std::cin, size, countNumbers);
   }
-  catch (std::bad_alloc &e)
+  catch (std::bad_alloc&)
   {
     std::cerr << "Error creating dinamic memmory\n";
     return 1;
@@ -166,8 +172,9 @@ int main()
   char *res1 = nullptr;
   try
   {
-    char *tmp = new char[countNumbers + 1];
-    res1 = muh::latRmv(tmp, str, size);
+    char *tmp = new char[countNotLetters + 1];
+    tmp[countNotLetters] = '\0';
+    res1 = muh::latRmv(tmp, str);
   }
   catch (const std::bad_alloc&)
   {
@@ -176,22 +183,21 @@ int main()
     return 1;
   }
   const char *line2 = "def ghk";
-  const size_t size2 = 7;
   char *res2 = nullptr;
   size_t sizeForLatTwo = 0;
   try
   {
-    char *tmp = new char[size2 + size - countNumbers + 1];
-    res2 = muh::latTwo(str, size, line2, size2, tmp, sizeForLatTwo);
+    char *tmp = new char[size2 + size - countNotLetters + 1];
+    res2 = muh::latTwo(str, line2, tmp, sizeForLatTwo);
   }
-  catch (...)
+  catch (const std::bad_alloc&)
   {
     std::cerr << "Error creating dinamic memmory\n";
     delete[] res1;
     delete[] str;
     return 1;
   }
-  for (size_t i = 0; i < countNumbers; ++i)
+  for (size_t i = 0; i < countNotLetters; ++i)
   {
     std::cout << res1[i] << ' ';
   }
