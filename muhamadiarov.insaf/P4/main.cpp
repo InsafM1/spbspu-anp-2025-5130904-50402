@@ -4,6 +4,14 @@
 
 namespace muhamadiarov
 {
+  bool isNotLetter(char ch)
+  {
+    if (!std::isalpha(ch))
+    {
+      return true;
+    }
+    return false;
+  }
   bool checkOnRepeat(const char *line, char symbol, size_t size)
   {
     for (size_t i = 0; i < size; ++i)
@@ -52,10 +60,7 @@ namespace muhamadiarov
         throw std::bad_alloc();
       }
       str[size] = ch;
-      if (!std::isalpha(str[size]))
-      {
-        ++countNotLetters;
-      }
+      countNotLetters += isNotLetter(str[size]);
       ++size;
     }
     if (in.fail())
@@ -112,25 +117,24 @@ namespace muhamadiarov
     res[count] = '\0';
     return res;
   }
-  char *toAssociatStrings(const char *str1, const char *res, size_t &size)
+  char *toAssociatStrings(const char *str1, char *res, size_t &size)
   {   
     size_t i = 0;
     while (str1[i] != '\0')
     {
       bool ch = checkOnRepeat(res, str1[i], size);
-      if (!std::isdigit(str1[i]) && str1[i] != ' ')
+      if (std::isalpha(str1[i]) && str1[i] != ' ' && !ch)
       {
-        res[size] = str1[i];
-        ++size;
+        res[size++] = str1[i];
       }
       ++i;
     }
     return res;
   }
-  char *latTwo(const char *line1, const char *line2, char *res2, size_t &size)
+  char *latTwo(const char *line1, const char *line2, char *res2, size_t& size)
   {
-    res = toAssociatStrings(line1, res2, size);
-    res = toAssociatStrings(line2, res2, size); 
+    res2 = toAssociatStrings(line1, res2, size);
+    res2 = toAssociatStrings(line2, res2, size); 
     char tch = ' ';
     for (size_t i = 0; i < size; ++i)
     {
@@ -157,7 +161,7 @@ int main()
   size_t size = 0;
   try
   {
-    str = muh::getline(std::cin, size, countNumbers);
+    str = muh::getline(std::cin, size, countNotLetters);
   }
   catch (std::bad_alloc&)
   {
@@ -183,12 +187,14 @@ int main()
     return 1;
   }
   const char *line2 = "def ghk";
+  const size_t countLetters2 = 6;
   char *res2 = nullptr;
-  size_t sizeForLatTwo = 0;
+  const size_t countLettersOnRes2 = countLetters2 + size - countNotLetters + 1;
+  size_t countElementsRes2 = 0;
   try
   {
-    char *tmp = new char[size2 + size - countNotLetters + 1];
-    res2 = muh::latTwo(str, line2, tmp, sizeForLatTwo);
+    char *tmp = new char[countLettersOnRes2];
+    res2 = muh::latTwo(str, line2, tmp, countElementsRes2);
   }
   catch (const std::bad_alloc&)
   {
@@ -197,15 +203,29 @@ int main()
     delete[] str;
     return 1;
   }
-  for (size_t i = 0; i < countNotLetters; ++i)
+  try
   {
-    std::cout << res1[i] << ' ';
+    char *tmp = new char[countElementsRes2 + 1];
+    size_t i = 0;
+    while (res2[i] != '\0')
+    {
+      tmp[i] = res2[i];
+      ++i;
+    }
+    tmp[i] = '\0';
+    delete [] res2;
+    res2 = tmp;
   }
+  catch (const std::bad_alloc&)
+  {
+    delete [] str;
+    delete [] res1;
+    delete [] res2;
+    return 1;
+  }
+  std::cout << res1;
   std::cout << '\n';
-  for (size_t i = 0; i < sizeForLatTwo; ++i)
-  {
-    std::cout << res2[i];
-  }
+  std::cout << res2;
   std::cout << '\n';
   delete[] str;
   delete[] res1;
